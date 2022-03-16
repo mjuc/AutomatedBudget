@@ -69,7 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'AutomatedBudget.wsgi.application'
-AUTH_USER_MODEL = 'pres.User'
 
 
 # Database
