@@ -12,3 +12,7 @@ def current(request):
 @login_required
 def upload(request):
     pass
+
+@login_required
+def create(request):
+    pass
