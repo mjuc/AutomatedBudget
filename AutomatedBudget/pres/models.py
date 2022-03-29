@@ -10,6 +10,11 @@ class Expense(models.Model):
     sum = models.CommaSeparatedIntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+class Condition(models.Model):
+    name = models.CharField(max_length=30)
+    value = models.CharField(max_length=10)
+    isExtendable = models.BooleanField()
+
 class Budget(models.Model):
     TYPES = [('MONTH','monthly'),('QUART','quarterly'),('YEAR','yearly')]
     ANNOTATIONS = [('LOSS','loss'),('EVEN','even'),('NORMAL','')]
