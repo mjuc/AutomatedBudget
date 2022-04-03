@@ -14,15 +14,17 @@
 
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'home' %}">Main</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'current' %}">Current</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'history' %}">History</a>
-        </li>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Main</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'current' %}">Current</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'history' %}">History</a>
+            </li>
+        </ul>
     </nav>
     {% block content %} {% endblock %}
 
