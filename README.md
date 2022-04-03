@@ -4,3 +4,4 @@ Web based solution to automate creating budgets according to user specified cond
 
 Used technologies:
   * Django
+  * Bootstrap 4
