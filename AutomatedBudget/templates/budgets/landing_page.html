@@ -1,0 +1,16 @@
+{% extends 'registration/base.html' %} {% block content %}
+<!-- due to lack of navbar -->
+<section>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Register</a>
+        </li>
+    </nav>
+    <div class="container">
+        Welcome to AutomatedBudget!
+    </div>
+</section>
+{% endblock %}
