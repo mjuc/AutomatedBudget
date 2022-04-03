@@ -4,10 +4,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Category(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=50)
 
 class Expense(models.Model):
-    sum = models.CommaSeparatedIntegerField()
+    sum = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 class Condition(models.Model):
@@ -23,5 +23,5 @@ class Budget(models.Model):
     creation_date = models.DateField()
     type = models.CharField(max_length=5,choices=TYPES)
     expenses = models.ForeignKey(Expense, on_delete=models.CASCADE)
-    income = models.CommaSeparatedIntegerField()
+    income = models.FloatField()
     annotation = models.CharField(max_length=4,choices=ANNOTATIONS)
