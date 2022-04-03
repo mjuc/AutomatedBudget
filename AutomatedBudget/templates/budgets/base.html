@@ -15,13 +15,13 @@
 <body>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
         <li class="nav-item">
-            <a class="nav-link" href="#">Main</a>
+            <a class="nav-link" href="{% url 'home' %}">Main</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Current</a>
+            <a class="nav-link" href="{% url 'current' %}">Current</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">History</a>
+            <a class="nav-link" href="{% url 'history' %}">History</a>
         </li>
     </nav>
     {% block content %} {% endblock %}

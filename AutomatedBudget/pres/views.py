@@ -3,11 +3,11 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def history(request):
-    pass
+    return render(request,'budgets/historic.html')
 
 @login_required
 def current(request):
-    pass
+    return render(request,'budgets/current.html')
 
 @login_required
 def create(request):
