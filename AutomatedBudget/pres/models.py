@@ -1,14 +1,9 @@
-from re import A
-from unicodedata import category
 from django.db import models
 from django.contrib.auth.models import User
 
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-
 class Expense(models.Model):
     sum = models.FloatField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.CharField(max_length=50)
 
 class Condition(models.Model):
     name = models.CharField(max_length=30)
@@ -23,5 +18,6 @@ class Budget(models.Model):
     creation_date = models.DateField()
     type = models.CharField(max_length=5,choices=TYPES)
     expenses = models.ForeignKey(Expense, on_delete=models.CASCADE)
+    conditions = models.ForeignKey(Condition, on_delete=models.CASCADE)
     income = models.FloatField()
     annotation = models.CharField(max_length=4,choices=ANNOTATIONS)
