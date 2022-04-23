@@ -1,16 +1,21 @@
-from unicodedata import category, name
+from attr import fields
 from django import forms
+from .models import Budget, Condition, Expense
 
-class BudgetCreationForm(forms.Form):
-    TYPES = [('MONTH','monthly'),('QUART','quarterly'),('YEAR','yearly')]
-    type = forms.ChoiceField(choices=TYPES)
-    income = forms.FloatField()
+class ConditionCreationForm(forms.ModelForm):
+    class Meta:
+        model = Condition
+        fields = '__all__'
 
-class ConditionCreationForm(forms.Form):
-    name = forms.CharField(max_length=30)
-    value = forms.CharField(max_length=10)
-    isExtendable = forms.BooleanField()
+class ExpenseCreationForm(forms.ModelForm):
+    class Meta:
+        model = Expense
+        fields = '__all__'
 
-class ExpenseCreationForm(forms.Form):
-    sum = forms.FloatField()
-    category = forms.CharField(max_length=50)
+class BudgetCreationForm(forms.ModelForm):
+    class Meta:
+        model = Budget
+        exclude = ['owner','creation_date','annotation', 'expenses', 'conditions']
+
+ExpenseFormset = forms.formset_factory(ExpenseCreationForm)
+ConditionFormset = forms.formset_factory(ConditionCreationForm)

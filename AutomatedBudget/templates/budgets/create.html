@@ -1,9 +1,31 @@
 {% extends 'budgets/base.html' %} {% block content %}
 <section>
     <div class="container">
-        <form method="post" action="{% url 'create' %}">
-            {csrf_token}
+        <form class="form-horizontal" method="POST" action="">
+            {% csrf_token %}
+            {{ form }}
+            {% for expForm in expenseFormset %}
+            <div class="row">
+                <div class="col=2">
+                    <div class="input-group">
+                        {{ expForm }}
+                    </div>
+                </div>
+                <button class="btn">+</button>
+            </div>
+            {% endfor %}
+            {% for condForm in conditionFormset %}
+            <div class="row">
+                <div class="col-2">
+                    <div class="input-group">
+                        {{ condForm }}
+                    </div>
+                </div>
+                <button class="btn">+</button>
+            </div>
+            {% endfor %}
         </form>
+        <button type="submit">Create</button>
     </div>
 </section>
 {% endblock %}
