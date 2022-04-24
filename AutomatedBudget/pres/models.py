@@ -7,8 +7,8 @@ class Expense(models.Model):
 
 class Condition(models.Model):
     name = models.CharField(max_length=30)
-    value = models.CharField(max_length=10)
     isExtendable = models.BooleanField(blank=False)
+    value = models.CharField(max_length=10)
 
 class Budget(models.Model):
     TYPES = [('MONTH','monthly'),('QUART','quarterly'),('YEAR','yearly')]
