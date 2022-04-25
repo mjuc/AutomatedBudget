@@ -29,7 +29,7 @@ def create(request):
             for condForm in conditionFormset:
                 condition = condForm.save(commit=False)
                 conditions.append(condition)
-            #call genetic algo here
+            #call genetic algo here(budget.income,budget.expenses,conditions)
             budget.save()
     elif request.method == 'GET':
         form = BudgetCreationForm()
