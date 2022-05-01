@@ -26,7 +26,7 @@ def create(request):
             budget = form.save(commit=False)
             for expForm in expenseFormset:
                 expense = expForm.save(commit=False)
-                budget.expenses += expense
+                budget.expenses.add(expense)
                 expense.save()
             for condForm in conditionFormset:
                 condition = condForm.save(commit=False)
@@ -38,8 +38,9 @@ def create(request):
                     expense = Expense()
                     expense.category = exp["category"]
                     expense.sum = exp["sum"]
-                    budget.expenses += expense
+                    budget.expenses.add(expense)
                     expense.save()
+            budget.owner = request.user
             budget.save()
     elif request.method == 'GET':
         form = BudgetCreationForm()
