@@ -2,18 +2,20 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .forms import BudgetCreationForm, ConditionFormset, ExpenseFormset
 from .budget_creation import budgetCreationGA
-from .models import Expense
+from .models import Budget, Expense
 
 def landing(request):
     return render(request,'budgets/landing_page.html')
 
 @login_required
 def history(request):
-    return render(request,'budgets/historic.html')
+    budgets = Budget.objects.all()
+    return render(request,'budgets/historic.html',context={"budgets": budgets})
 
 @login_required
 def current(request):
-    return render(request,'budgets/current.html')
+    budget = Budget.objects.latest()
+    return render(request,'budgets/current.html',context={"budget": budget})
 
 @login_required
 def create(request):
