@@ -15,7 +15,7 @@ class Budget(models.Model):
     ANNOTATIONS = [('LOSS','loss'),('EVEN','even'),('NORMAL','')]
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    creation_date = models.DateField()
+    creation_date = models.DateField(auto_now=True)
     type = models.CharField(max_length=5,choices=TYPES)
     expenses = models.ManyToManyField(Expense)
     conditions = models.ManyToManyField(Condition)
