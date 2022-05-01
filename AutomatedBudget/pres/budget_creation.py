@@ -183,8 +183,16 @@ def budgetCreationGA(income,knownExpenses,conditions):
         calculatedExpenses = []
         for i in range(len(bestGenome.chromosomes)):
             tmp = {}
-            tmp["categpory"] = conds[i].name
+            tmp["category"] = conds[i].name
             if conds[i].isPercentage:
                 tmp["sum"] = conds[i].value * USABLE_AMOUNT * bestGenome.chromosomes[i]
             else:
                 tmp["sum"] = conds[i].value * bestGenome.chromosomes[i]
+            calculatedExpenses.append(tmp)
+        if bestGenome.fitness != 0:
+            tmp = {}
+            tmp["sum"] = USABLE_AMOUNT - bestGenome.fitness
+            tmp["category"] = "unassigned"
+            calculatedExpenses.append(tmp)
+        ret["calculatedExpenses"] = calculatedExpenses
+        return (True,ret)

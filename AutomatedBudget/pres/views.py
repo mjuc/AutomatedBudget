@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .forms import BudgetCreationForm, ConditionFormset, ExpenseFormset
+from .budget_creation import budgetCreationGA
+from .models import Expense
 
 def landing(request):
     return render(request,'budgets/landing_page.html')
@@ -29,7 +31,15 @@ def create(request):
             for condForm in conditionFormset:
                 condition = condForm.save(commit=False)
                 conditions.append(condition)
-            #call genetic algo here(budget.income,budget.expenses,conditions)
+            inLimit, newExpenses = budgetCreationGA(budget.income,budget.expenses,conditions)
+            budget.annotation = newExpenses["annotation"]
+            if inLimit:
+                for exp in newExpenses["calculatedExpenses"]:
+                    expense = Expense()
+                    expense.category = exp["category"]
+                    expense.sum = exp["sum"]
+                    budget.expenses += expense
+                    expense.save()
             budget.save()
     elif request.method == 'GET':
         form = BudgetCreationForm()
