@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
+from sqlalchemy import null
 from .forms import BudgetCreationForm, ConditionFormset, ExpenseFormset
 from .budget_creation import budgetCreationGA
 from .models import Budget, Expense
@@ -29,25 +30,34 @@ def create(request):
         conditionFormset = ConditionFormset(request.POST)
         if form.is_valid() and expenseFormset.is_valid() and conditionFormset.is_valid():
             conditions = []
+            expenses = []
             budget = form.save(commit=False)
+            budget.owner = request.user
+            budget.save()
             for expForm in expenseFormset:
                 expense = expForm.save(commit=False)
-                budget.expenses.add(expense)
-                expense.save()
+                if expense.sum != None:
+                    expenses.append(expense.sum)
+                    expense.save()
+                    budget.expenses.add(expense)
             for condForm in conditionFormset:
+                tmp = {}
                 condition = condForm.save(commit=False)
-                conditions.append(condition)
-            inLimit, newExpenses = budgetCreationGA(budget.income,budget.expenses,conditions)
+                if condition.name != None:
+                    tmp["name"] = condition.name
+                    tmp["value"] = condition.value
+                    tmp["isExtendable"] = condition.isExtendable
+                    conditions.append(tmp)
+            inLimit, newExpenses = budgetCreationGA(budget.income,expenses,conditions)
             budget.annotation = newExpenses["annotation"]
             if inLimit:
                 for exp in newExpenses["calculatedExpenses"]:
                     expense = Expense()
                     expense.category = exp["category"]
                     expense.sum = exp["sum"]
-                    budget.expenses.add(expense)
                     expense.save()
-            budget.owner = request.user
-            budget.save()
+                    budget.expenses.add(expense)
+                    
             return redirect(current)
         else:
             return redirect(error)
