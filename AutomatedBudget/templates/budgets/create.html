@@ -1,34 +1,40 @@
 {% extends 'budgets/base.html' %} {% load crispy_forms_tags %} {% block content %}
-{% load static %}
-<script src="{% static 'buttons.js' %}" type="text/javascript"></script>
 <section>
     <div class="container">
-        <form class="form-horizontal" action="" method="POST" >
+        <form id="main-form" class="form-horizontal" action="" method="POST" >
             {% csrf_token %}
             <div>
-                {{ form|crispy}}
+                {{ form }}
             </div>
-            <div id="expForm">
+            <div id="expFormMetadata">
+                {{ expenseFormset.management_form }}
+            </div>
+            <div class="expForm">
                 {% for expForm in expenseFormset %}
-                <div class="row exp-row" id="exp">
-                    {{ expForm|crispy}}
-                    <button class="btn btn-danger remove-exp-row " >-</button>
+                <div class="row exp-form" id="exp">
+                    {{ expForm }}
+                    <button class="btn btn-danger remove-exp-form " >-</button>
                 </div>
                 {% endfor %}
             </div>
-            <button class="btn btn-success add-exp-row">Add new expense.</button>
-            <div id="condForm">
+            <button id="add-exp-form" class="btn btn-success">Add new expense.</button>
+            <div id="condFormMetadata">
+                {{ conditionFormset.management_form }}
+            </div>
+            <div class="condForm">
                 {% for condForm in conditionFormset %}
-                <div class="row cond-row" id="cond">
-                    {{ condForm|crispy }}
-                    <button class="btn btn-danger remove-cond-row" >-</button>
+                <div class="row cond-form" id="cond">
+                    {{ condForm }}
+                    <button class="btn btn-danger remove-cond-form" >-</button>
                 </div>
                 {% endfor %}
             </div>
-            <button class="btn btn-success add-cond-row">Add new condition.</button>
+            <button id="add-cond-form" class="btn btn-success">Add new condition.</button>
             <button type="submit" class="btn btn-block btn-primary">Create</button>
         </form>
     </div>
 
 </section>
+{% load static %}
+<script src="{% static 'buttons.js' %}" type="text/javascript"></script>
 {% endblock %}

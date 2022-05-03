@@ -1,77 +1,51 @@
-var expTotal = 1;
-var condTotal = 1;
+const addExpenseButton = document.querySelector("#add-exp-form");
+const addConditionButton = document.querySelector("#add-cond-form");
 
-function updateElementIndex(el, prefix, ndx) {
-    var id_regex = new RegExp('(' + prefix + '-\\d+)');
-    var replacement = prefix + '-' + ndx;
-    el.id = el.id.replace(id_regex, replacement);
-}
+const expenseForm = document.getElementsByClassName("expForm");
+const conditionForm = document.getElementsByClassName("condForm");
+const mainForm = document.querySelector("#main-form");
 
-function copyElement(target) {
-    var appendTarget = document.getElementById(target + "Form");
-    src = document.getElementById(target);
-    copy = src.cloneNode(true);
-    if (target === 'exp')
-    {
-        updateElementIndex(copy,target,expTotal);
-        expTotal++;
-    }
-    else if (target === 'cond')
-    {
-        updateElementIndex(copy,target,condTotal);
-        condTotal++;
-    }
-    appendTarget.appendChild(copy);
-    if (target === 'exp')
-    {
-        var previousRows = $('.exp-row:not(:last)');
-        previousRows.find('.btn.add-exp-row')
-        .removeClass('btn-success').addClass('btn-danger')
-        .removeClass('add-exp-row').addClass('remove-exp-row');
-    }
-    else if (target === 'cond')
-    {
-        var previousRows = $('.cond-row:not(:last)');
-        previousRows.find('.btn.add-cond-row')
-        .removeClass('btn-success').addClass('btn-danger')
-        .removeClass('add-cond-row').addClass('remove-cond-row');
-    }
-    
-}
+const expFormMeta = document.getElementById("expFormMetadata");
+const condFormMeta = document.getElementById("condFormMetadata");
+const expTotalForms = expFormMeta.children[1];
+const condTotalForms = condFormMeta.children[1];
 
-function deleteElement(target, btn) {
-    console.log("dupa")
-    var total = ((target === 'exp') ? expTotal : condTotal);
-    if (total > 1)
-    {
-        var forms;
-        if (target === 'exp')
-        {
-            btn.closest('.exp-row').remove();
-            total--;
-            expTotal--;
-            forms = $('.exp-row'); 
-        }
-        else if (target === 'cond')
-        {
-            btn.closest('.cond-row').remove();
-            total--;
-            condTotal--;
-            forms = $('.cond-row');
-        }
-        for (var i=1, formCount = forms.length; i<formCount; i++)
-        {
-            updateElementIndex(forms[i],target,i)
-        }
+let expFormCount = expenseForm.length - 1;
+let condFormCount = conditionForm.length - 1;
+
+addExpenseButton.addEventListener("click", function(event){
+    event.preventDefault();
+    const newExpenseForm = expenseForm[0].cloneNode(true);
+    const formRegex = RegExp(`form-(\\d){1}-`, 'g');
+    expFormCount++;
+
+    newExpenseForm.innerHTML = newExpenseForm.innerHTML.replace(formRegex, `form-${expFormCount}-`);
+    mainForm.insertBefore(newExpenseForm,addExpenseButton);
+    expTotalForms.setAttribute('value', `${expFormCount + 1}`);
+});
+
+addConditionButton.addEventListener("click", function(event){
+    event.preventDefault();
+    const newConditionForm = conditionForm[0].cloneNode(true);
+    const formRegex = RegExp(`form-(\\d){1}-`, 'g');
+    condFormCount++;
+
+    newConditionForm.innerHTML = newConditionForm.innerHTML.replace(formRegex, `form-${condFormCount}-`);
+    mainForm.insertBefore(newConditionForm,addConditionButton);
+    condTotalForms.setAttribute('value', `${condFormCount + 1}`);
+});
+
+mainForm.addEventListener("click", function (event) {
+    if (event.target.classList.contains("remove-exp-form")) {
+        event.preventDefault();
+        event.target.parentElement.remove();
+        expFormCount--;
+        expTotalForms.setAttribute('value', `${expFormCount + 1}`);
     }
-}
-
-$(document).on('click', '.add-exp-row' ,function(e){
-    e.preventDefault();
-    copyElement('exp');
-})
-
-$(document).on('click', '.add-cond-row' ,function(e){
-    e.preventDefault();
-    copyElement('cond');
-})
+    else if(event.target.classList.contains("remove-cond-form")) {
+        event.preventDefault();
+        event.target.parentElement.remove();
+        condFormCount--;
+        condTotalForms.setAttribute('value', `${condFormCount + 1}`);
+    }
+});
