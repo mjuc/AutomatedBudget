@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from .forms import BudgetCreationForm, ConditionFormset, ExpenseFormset
 from .budget_creation import budgetCreationGA
@@ -14,8 +14,12 @@ def history(request):
 
 @login_required
 def current(request):
-    budget = Budget.objects.latest()
+    budget = Budget.objects.last()
     return render(request,'budgets/current.html',context={"budget": budget})
+
+@login_required
+def error(request):
+    return render(request,'budgets/error.html')
 
 @login_required
 def create(request):
@@ -44,6 +48,9 @@ def create(request):
                     expense.save()
             budget.owner = request.user
             budget.save()
+            return redirect(current)
+        else:
+            return redirect(error)
     elif request.method == 'GET':
         form = BudgetCreationForm()
         expenseFormset = ExpenseFormset()   
