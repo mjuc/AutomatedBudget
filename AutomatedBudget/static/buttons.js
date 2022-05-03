@@ -7,8 +7,8 @@ const mainForm = document.querySelector("#main-form");
 
 const expFormMeta = document.getElementById("expFormMetadata");
 const condFormMeta = document.getElementById("condFormMetadata");
-const expTotalForms = expFormMeta.children[1];
-const condTotalForms = condFormMeta.children[1];
+const expTotalForms = expFormMeta.children[0];
+const condTotalForms = condFormMeta.children[0];
 
 let expFormCount = expenseForm.length - 1;
 let condFormCount = conditionForm.length - 1;
