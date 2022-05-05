@@ -1,5 +1,6 @@
-from random import random
-from re import A
+from random import random,uniform,randrange
+
+from numpy import floor
 
 
 MUTATION_RATE = 1
@@ -8,37 +9,34 @@ CROSSOVER_RATE = 70
 THRESHOLD = 1000
 USABLE_AMOUNT = 0
 
-class ParsedCondition():
-    name = ""
-    isExtendable = False
-    isPercentage = False
-    value = 0
-
 class Genome():
-    chromosomes = []
-    fitness = 9999
+    def __init__(self,chromosomes,fitness):
+        self.chromosomes=chromosomes
+        self.fitness=fitness
 
 def evaluate(chromosomes,conditions):
     spentAmount = 0
     for i in range(len(chromosomes)):
-        if conditions[i].isPercentage:
-            spentAmount += conditions[i].value * USABLE_AMOUNT * chromosomes[i]
+        if conditions[i]["isPercentage"]:
+            spentAmount += conditions[i]["value"] * USABLE_AMOUNT * chromosomes[i] / 100
         else:
-            spentAmount += conditions[i].value * chromosomes[i]
+            spentAmount += conditions[i]["value"] * chromosomes[i]
     return USABLE_AMOUNT - spentAmount
 
 def createNewPopulation(size,conditions):
     population = []
+    print("Conditions given to create new pop: ",conditions)
     for i in range(size):
-        newGenome = Genome()
+        chromosomes = []
         for condition in conditions:
-            if condition.isExtendable :
-                newGenome.chromosomes.append(random(0,5))
+            if condition["isExtendable"]:
+                chromosomes.append(uniform(0,5))
             else:
-                newGenome.chromosomes.append(random())
-
-        newGenome.fitness = evaluate(newGenome.chromosomes,conditions)
+                chromosomes.append(random())
+        fitness = evaluate(chromosomes,conditions)
+        newGenome = Genome(chromosomes,fitness)
         population.append(newGenome)
+    return population
 
 def findBestGenome(population):
     allFitness = [i.fitness for i in population]
@@ -46,46 +44,42 @@ def findBestGenome(population):
     return population[allFitness.index(bestFitness)]
 
 def tournamentSelection(population,k):
-    selected = [population[random.randrange(0, len(population))] for i in range(k)]
+    selected = [population[randrange(0, len(population))] for i in range(k)]
     bestGenome = findBestGenome(selected)
     return bestGenome
 
 def swapMutation(chromo):
     for x in range(MUTATION_REPEAT_COUNT):
-        p1, p2 = [random.randrange(1, len(chromo) - 1) for i in range(2)]
+        p1, p2 = [randrange(1, len(chromo) - 1) for i in range(2)]
         while p1 == p2:
-            p2 = random.randrange(1, len(chromo) - 1)
+            p2 = randrange(1, len(chromo) - 1)
         log = chromo[p1]
         chromo[p1] = chromo[p2]
         chromo[p2] = log
     return chromo
 
-def copyChromosomes(parent1,parent2):
+def copyChromosomes(parent1,parent2,conditions):
     size = len(parent1)
     child = [-1] * size
     
     for i in range(size):
-        if random.randrange(0,1)==0:
+        if randrange(0,1)==0:
             child[i]=parent1[i]
         else:
             child[i]=parent2[i]
     
-    if random.randrange(0, 100) < MUTATION_RATE:
+    if randrange(0, 100) < MUTATION_RATE:
         pass
         child = swapMutation(child)
     
-    newGenome = Genome()
-    newGenome.chromosomes = child
-    newGenome.fitness = evaluate(child)
+    newGenome = Genome(child,evaluate(child,conditions))
     return newGenome
 
 def orderOneCrossover(parent1, parent2):
     size = len(parent1)
     child = [-1] * size
 
-    child[0], child[size - 1] = 0, 0
-
-    point = random.randrange(5, size - 4)
+    point = randrange(1, size - 4)
 
     for i in range(point, point + 4):
         child[i] = parent1[i]
@@ -107,16 +101,16 @@ def orderOneCrossover(parent1, parent2):
             if point == size:
                 point = 0
 
-def reproduction(population):
+def reproduction(population,conditions):
     parent1 = tournamentSelection(population, 10).chromosomes
     parent2 = tournamentSelection(population, 6).chromosomes
     while parent1 == parent2:
         parent2 = tournamentSelection(population, 6).chromosomes
     
-    if random.randrange(0, 100)<CROSSOVER_RATE:
+    if randrange(0, 100)<CROSSOVER_RATE and len(parent1) > 2:
         return orderOneCrossover(parent1, parent2)
     else:
-        return copyChromosomes(parent1,parent2)
+        return copyChromosomes(parent1,parent2,conditions)
 
 def parseValue(value):
     ret = 0
@@ -130,26 +124,28 @@ def parseValue(value):
 
 def conditionsPreparsing(conditions):
     parsedConditions = []
+    print("Conditions set to parsing: ",conditions)
     for condition in conditions:
         val = 0
-        tempCond = ParsedCondition()
-        tempCond.name = condition.name
-        tempCond.isExtendable = condition.isExtendable
-        if "%" in condition.value:
-            tmp = condition.value.split("%")[0]
-            tempCond.isPercentage = True
+        tempCond = {}
+        tempCond["name"] = condition["name"]
+        tempCond["isExtendable"] = condition["isExtendable"]
+        if "%" in condition["value"]:
+            tmp = condition["value"].split("%")[0]
+            tempCond["isPercentage"] = True
             val = parseValue(tmp)
         else:
-            val = parseValue(condition.value)
-        tempCond.value = val
+            tempCond["isPercentage"] = False
+            val = parseValue(condition["value"])
+        tempCond["value"] = val
         parsedConditions.append(tempCond)
-    
+    print("Parsed conditions: ",parsedConditions)
     return parsedConditions
 
 def incomePreparsing(income, knownExpenses):
     expenses = 0
     for expense in knownExpenses:
-        expenses += expense.sum
+        expenses += expense
     
     remainingAmount = income - expenses
     return remainingAmount
@@ -158,19 +154,21 @@ def budgetCreationGA(income,knownExpenses,conditions):
     max_gen = 300
     remainingAmount = incomePreparsing(income,knownExpenses)
     USABLE_AMOUNT = remainingAmount
-    bestGenome = Genome()
+    bestGenome = Genome([],0)
+    print("Conditions from form: ",conditions)
     if remainingAmount < 0:
         return (False,{"annotation": "LOSS"})
     elif remainingAmount == 0:
         return (False,{"annotation": "EVEN"})
     else:
         conds = conditionsPreparsing(conditions)
+        print("Conditions post parsing before new pop creation: ",conds)
         population = createNewPopulation(50,conds)
         generation = 0
 
         while generation < max_gen:
-            for i in range(len(population)/2):
-                population.append(reproduction(population))
+            for i in range(int(floor(len(population)/2))):
+                population.append(reproduction(population,conds))
 
             for genom in population:
                 if genom.fitness > THRESHOLD or genom.fitness < 0:
@@ -185,7 +183,7 @@ def budgetCreationGA(income,knownExpenses,conditions):
             tmp = {}
             tmp["category"] = conds[i].name
             if conds[i].isPercentage:
-                tmp["sum"] = conds[i].value * USABLE_AMOUNT * bestGenome.chromosomes[i]
+                tmp["sum"] = conds[i].value * USABLE_AMOUNT * bestGenome.chromosomes[i] / 100
             else:
                 tmp["sum"] = conds[i].value * bestGenome.chromosomes[i]
             calculatedExpenses.append(tmp)
