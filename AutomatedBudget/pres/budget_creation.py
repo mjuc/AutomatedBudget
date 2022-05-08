@@ -1,18 +1,24 @@
 from random import random,uniform,randrange
-
 from numpy import floor
 
 
 MUTATION_RATE = 1
 MUTATION_REPEAT_COUNT = 2
 CROSSOVER_RATE = 70
-THRESHOLD = 1000
+THRESHOLD = 850
 USABLE_AMOUNT = 0
 
 class Genome():
     def __init__(self,chromosomes,fitness):
         self.chromosomes=chromosomes
         self.fitness=fitness
+
+def removeNones(arr):
+    ret = []
+    for a in arr:
+        if a != None:
+            ret.append(a)
+    return ret
 
 def evaluate(chromosomes,conditions):
     spentAmount = 0
@@ -25,7 +31,6 @@ def evaluate(chromosomes,conditions):
 
 def createNewPopulation(size,conditions):
     population = []
-    print("Conditions given to create new pop: ",conditions)
     for i in range(size):
         chromosomes = []
         for condition in conditions:
@@ -50,9 +55,9 @@ def tournamentSelection(population,k):
 
 def swapMutation(chromo):
     for x in range(MUTATION_REPEAT_COUNT):
-        p1, p2 = [randrange(1, len(chromo) - 1) for i in range(2)]
+        p1, p2 = [randrange(0, len(chromo) - 1) for i in range(2)]
         while p1 == p2:
-            p2 = randrange(1, len(chromo) - 1)
+            p2 = randrange(0, len(chromo) - 1)
         log = chromo[p1]
         chromo[p1] = chromo[p2]
         chromo[p2] = log
@@ -79,29 +84,17 @@ def orderOneCrossover(parent1, parent2):
     size = len(parent1)
     child = [-1] * size
 
-    point = randrange(1, size - 4)
+    point = randrange(1, size)
 
-    for i in range(point, point + 4):
+    for i in range(point):
         child[i] = parent1[i]
-    point += 4
-    point2 = point
-    while child[point] in [-1, 0]:
-        if child[point] != 0:
-            if parent2[point2] not in child:
-                child[point] = parent2[point2]
-                point += 1
-                if point == size:
-                    point = 0
-            else:
-                point2 += 1
-                if point2 == size:
-                    point2 = 0
-        else:
-            point += 1
-            if point == size:
-                point = 0
+
+    for i in range(point, size):
+        child[i] = parent2[i]
+
 
 def reproduction(population,conditions):
+    population = removeNones(population)
     parent1 = tournamentSelection(population, 10).chromosomes
     parent2 = tournamentSelection(population, 6).chromosomes
     while parent1 == parent2:
@@ -124,7 +117,6 @@ def parseValue(value):
 
 def conditionsPreparsing(conditions):
     parsedConditions = []
-    print("Conditions set to parsing: ",conditions)
     for condition in conditions:
         val = 0
         tempCond = {}
@@ -139,7 +131,6 @@ def conditionsPreparsing(conditions):
             val = parseValue(condition["value"])
         tempCond["value"] = val
         parsedConditions.append(tempCond)
-    print("Parsed conditions: ",parsedConditions)
     return parsedConditions
 
 def incomePreparsing(income, knownExpenses):
@@ -155,27 +146,29 @@ def budgetCreationGA(income,knownExpenses,conditions):
     remainingAmount = incomePreparsing(income,knownExpenses)
     USABLE_AMOUNT = remainingAmount
     bestGenome = Genome([],0)
-    print("Conditions from form: ",conditions)
     if remainingAmount < 0:
         return (False,{"annotation": "LOSS"})
     elif remainingAmount == 0:
         return (False,{"annotation": "EVEN"})
     else:
         conds = conditionsPreparsing(conditions)
-        print("Conditions post parsing before new pop creation: ",conds)
         population = createNewPopulation(50,conds)
         generation = 0
 
         while generation < max_gen:
+            print("Generation: ",generation)
             for i in range(int(floor(len(population)/2))):
                 population.append(reproduction(population,conds))
 
             for genom in population:
-                if genom.fitness > THRESHOLD or genom.fitness < 0:
-                    population.remove(genom)
+                if genom != None:
+                    if genom.fitness > THRESHOLD or genom.fitness < 0:
+                        population.remove(genom)
             
+            population = removeNones(population)
             bestGenome = findBestGenome(population)
-
+            generation += 1
+        
         ret = {}
         ret["annotation"] = ""
         calculatedExpenses = []
