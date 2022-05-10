@@ -142,7 +142,7 @@ def incomePreparsing(income, knownExpenses):
     return remainingAmount
 
 def budgetCreationGA(income,knownExpenses,conditions):
-    max_gen = 300
+    max_gen = 40
     remainingAmount = incomePreparsing(income,knownExpenses)
     USABLE_AMOUNT = remainingAmount
     bestGenome = Genome([],0)
@@ -174,11 +174,11 @@ def budgetCreationGA(income,knownExpenses,conditions):
         calculatedExpenses = []
         for i in range(len(bestGenome.chromosomes)):
             tmp = {}
-            tmp["category"] = conds[i].name
-            if conds[i].isPercentage:
-                tmp["sum"] = conds[i].value * USABLE_AMOUNT * bestGenome.chromosomes[i] / 100
+            tmp["category"] = conds[i]["name"]
+            if conds[i]["isPercentage"]:
+                tmp["sum"] = conds[i]["value"] * USABLE_AMOUNT * bestGenome.chromosomes[i] / 100
             else:
-                tmp["sum"] = conds[i].value * bestGenome.chromosomes[i]
+                tmp["sum"] = conds[i]["value"] * bestGenome.chromosomes[i]
             calculatedExpenses.append(tmp)
         if bestGenome.fitness != 0:
             tmp = {}

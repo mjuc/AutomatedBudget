@@ -1,3 +1,4 @@
+from math import floor
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from sqlalchemy import null
@@ -54,7 +55,7 @@ def create(request):
                 for exp in newExpenses["calculatedExpenses"]:
                     expense = Expense()
                     expense.category = exp["category"]
-                    expense.sum = exp["sum"]
+                    expense.sum = floor(exp["sum"])
                     expense.save()
                     budget.expenses.add(expense)
                     
