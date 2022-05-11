@@ -1,7 +1,18 @@
 {% extends 'budgets/base.html' %} {% block content %}
 <section>
     <div class="container">
-        budget history placeholder
+        {% for budget in budgets %}
+            <div class="row">
+                Created by: {{ budget.owner }} at {{ budget.creation_date }}
+            </div>
+            {% for expense in budget.expenses.all %}
+            <div class="row">
+                <div>
+                    {{ expense.category }}: {{ expense.sum }} 
+                </div>
+             </div>
+            {% endfor %}
+        {% endfor %}
     </div>
 </section>
 {% endblock %}
