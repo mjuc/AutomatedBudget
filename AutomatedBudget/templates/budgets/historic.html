@@ -2,7 +2,10 @@
 <section>
     <div class="container">
         {% for budget in budgets %}
-            <div class="row">
+        <div class="row budget-header">
+            {{ budget.type }}
+        </div>
+        <div class="row">
                 Created by: {{ budget.owner }} at {{ budget.creation_date }}
             </div>
             {% for expense in budget.expenses.all %}
@@ -14,5 +17,7 @@
             {% endfor %}
         {% endfor %}
     </div>
+    {% load static %}
+<script src="{% static 'presentation.js' %}" type="text/javascript"></script>
 </section>
 {% endblock %}
