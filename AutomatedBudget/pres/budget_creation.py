@@ -30,6 +30,7 @@ def evaluate(chromosomes,conditions):
     return USABLE_AMOUNT - spentAmount
 
 def createNewPopulation(size,conditions):
+    print("Create new population.")
     population = []
     for i in range(size):
         chromosomes = []
@@ -53,14 +54,14 @@ def tournamentSelection(population,k):
     bestGenome = findBestGenome(selected)
     return bestGenome
 
-def swapMutation(chromo):
+def mutation(chromo,conditions):
     for x in range(MUTATION_REPEAT_COUNT):
-        p1, p2 = [randrange(0, len(chromo) - 1) for i in range(2)]
-        while p1 == p2:
-            p2 = randrange(0, len(chromo) - 1)
-        log = chromo[p1]
-        chromo[p1] = chromo[p2]
-        chromo[p2] = log
+        idx = randrange(0, len(conditions) - 1)
+        if conditions[idx]["isExtendable"]:
+            chromo[idx] = uniform(0,5)
+        else:
+            chromo[idx] = random()
+        
     return chromo
 
 def copyChromosomes(parent1,parent2,conditions):
@@ -74,8 +75,7 @@ def copyChromosomes(parent1,parent2,conditions):
             child[i]=parent2[i]
     
     if randrange(0, 100) < MUTATION_RATE:
-        pass
-        child = swapMutation(child)
+        child = mutation(child,conditions)
     
     newGenome = Genome(child,evaluate(child,conditions))
     return newGenome
@@ -97,8 +97,10 @@ def reproduction(population,conditions):
     population = removeNones(population)
     parent1 = tournamentSelection(population, 10).chromosomes
     parent2 = tournamentSelection(population, 6).chromosomes
-    while parent1 == parent2:
+    cnt = 0
+    while parent1 == parent2 and cnt < 50:
         parent2 = tournamentSelection(population, 6).chromosomes
+        cnt += 1
     
     if randrange(0, 100)<CROSSOVER_RATE and len(parent1) > 2:
         return orderOneCrossover(parent1, parent2)
@@ -157,16 +159,21 @@ def budgetCreationGA(income,knownExpenses,conditions):
 
         while generation < max_gen:
             print("Generation: ",generation)
+            print("Reproduction cycle.")
             for i in range(int(floor(len(population)/2))):
                 population.append(reproduction(population,conds))
-
+            print("Removing unfit specimen.")
             for genom in population:
                 if genom != None:
                     if genom.fitness > THRESHOLD or genom.fitness < 0:
+                        
                         population.remove(genom)
-            
+            print("Finished removing unfit specimen.")
+            print("Removing None values.")
             population = removeNones(population)
+            print("Finished removing None values.")
             bestGenome = findBestGenome(population)
+            print("Updated best specimen.")
             generation += 1
         
         ret = {}
