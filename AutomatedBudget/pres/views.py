@@ -1,7 +1,6 @@
 from math import floor
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from sqlalchemy import null
 from .forms import BudgetCreationForm, ConditionFormset, ExpenseFormset
 from .budget_creation import budgetCreationGA
 from .models import Budget, Expense
