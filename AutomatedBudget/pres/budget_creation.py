@@ -164,7 +164,7 @@ def budgetCreationGA(income,knownExpenses,conditions):
                 population.append(reproduction(population,conds))
             print("Removing unfit specimen.")
             population.sort(key=lambda p:p.fitness)
-            for i in range(floor(len(population)/2)):
+            for i in range(int(floor(len(population)/2))):
                 population.remove(population[i])
             print("Finished removing unfit specimen.")
             print("Removing None values.")
