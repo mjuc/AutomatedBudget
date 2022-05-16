@@ -5,7 +5,6 @@ from numpy import floor
 MUTATION_RATE = 1
 MUTATION_REPEAT_COUNT = 2
 CROSSOVER_RATE = 70
-USABLE_AMOUNT = 0
 
 class Genome():
     def __init__(self,chromosomes,fitness):
@@ -21,15 +20,18 @@ def removeNones(arr):
 
 def evaluate(chromosomes,conditions):
     spentAmount = 0
+    condMatch = 0
     for i in range(len(chromosomes)):
         if conditions[i]["isPercentage"]:
-            spentAmount += conditions[i]["value"] * USABLE_AMOUNT * chromosomes[i] / 100
+            spentAmount += conditions[i]["value"] * userIncome * chromosomes[i]
+            condMatch += (conditions[i]["value"] * userIncome) - (conditions[i]["value"] * userIncome * chromosomes[i] / 100)
         else:
             spentAmount += conditions[i]["value"] * chromosomes[i]
-    return USABLE_AMOUNT - spentAmount
+            condMatch += conditions[i]["value"] - (conditions[i]["value"] * chromosomes[i])
+    ret = ((usableAmount - spentAmount) + condMatch)
+    return ret
 
 def createNewPopulation(size,conditions):
-    print("Create new population.")
     population = []
     for i in range(size):
         chromosomes = []
@@ -106,7 +108,7 @@ def reproduction(population,conditions):
     else:
         return copyChromosomes(parent1,parent2,conditions)
 
-def parseValue(value):
+def parseValue(value,isPercentage):
     ret = 0
     if " " in value:
         value = value.split(" ")[0]
@@ -114,6 +116,8 @@ def parseValue(value):
         ret = float(value)
     else:
         ret = int(value)
+    if isPercentage:
+        ret /= 100
     return ret
 
 def conditionsPreparsing(conditions):
@@ -126,10 +130,10 @@ def conditionsPreparsing(conditions):
         if "%" in condition["value"]:
             tmp = condition["value"].split("%")[0]
             tempCond["isPercentage"] = True
-            val = parseValue(tmp)
+            val = parseValue(tmp,tempCond["isPercentage"])
         else:
             tempCond["isPercentage"] = False
-            val = parseValue(condition["value"])
+            val = parseValue(condition["value"],tempCond["isPercentage"])
         tempCond["value"] = val
         parsedConditions.append(tempCond)
     return parsedConditions
@@ -144,10 +148,13 @@ def incomePreparsing(income, knownExpenses):
 
 
 def budgetCreationGA(income,knownExpenses,conditions):
-    max_gen = 300
+    max_gen = 1000
     remainingAmount = incomePreparsing(income,knownExpenses)
-    USABLE_AMOUNT = remainingAmount
-    bestGenome = Genome([],0)
+    global usableAmount 
+    usableAmount = remainingAmount
+    global userIncome
+    userIncome = income
+    bestGenome = Genome([],9999)
     if remainingAmount < 0:
         return (False,{"annotation": "LOSS"})
     elif remainingAmount == 0:
@@ -158,22 +165,15 @@ def budgetCreationGA(income,knownExpenses,conditions):
         generation = 0
         bestGenome = findBestGenome(population)
         while generation < max_gen:
-            print("Generation: ",generation)
-            print("Reproduction cycle.")
-            for i in range(int(floor(len(population)/2))):
+            popLength = int(floor(len(population)/2))
+            for i in range(popLength):
                 population.append(reproduction(population,conds))
-            print("Removing unfit specimen.")
             population.sort(key=lambda p:p.fitness)
-            for i in range(int(floor(len(population)/2))):
+            for i in range(popLength):
                 population.remove(population[i])
-            print("Finished removing unfit specimen.")
-            print("Removing None values.")
             population = removeNones(population)
-            print("Finished removing None values.")
             bestGenome = findBestGenome(population)
-            print("Updated best specimen.")
             generation += 1
-        
         ret = {}
         ret["annotation"] = ""
         calculatedExpenses = []
@@ -181,13 +181,13 @@ def budgetCreationGA(income,knownExpenses,conditions):
             tmp = {}
             tmp["category"] = conds[i]["name"]
             if conds[i]["isPercentage"]:
-                tmp["sum"] = conds[i]["value"] * USABLE_AMOUNT * bestGenome.chromosomes[i] / 100
+                tmp["sum"] = conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]
             else:
                 tmp["sum"] = conds[i]["value"] * bestGenome.chromosomes[i]
             calculatedExpenses.append(tmp)
         if bestGenome.fitness != 0:
             tmp = {}
-            tmp["sum"] = USABLE_AMOUNT - bestGenome.fitness
+            tmp["sum"] = usableAmount - sum(expense["sum"] for expense in calculatedExpenses)
             tmp["category"] = "unassigned"
             calculatedExpenses.append(tmp)
         ret["calculatedExpenses"] = calculatedExpenses
