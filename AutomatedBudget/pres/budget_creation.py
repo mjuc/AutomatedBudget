@@ -5,7 +5,6 @@ from numpy import floor
 MUTATION_RATE = 1
 MUTATION_REPEAT_COUNT = 2
 CROSSOVER_RATE = 70
-THRESHOLD = 850
 USABLE_AMOUNT = 0
 
 class Genome():
@@ -143,8 +142,9 @@ def incomePreparsing(income, knownExpenses):
     remainingAmount = income - expenses
     return remainingAmount
 
+
 def budgetCreationGA(income,knownExpenses,conditions):
-    max_gen = 40
+    max_gen = 20
     remainingAmount = incomePreparsing(income,knownExpenses)
     USABLE_AMOUNT = remainingAmount
     bestGenome = Genome([],0)
@@ -156,18 +156,16 @@ def budgetCreationGA(income,knownExpenses,conditions):
         conds = conditionsPreparsing(conditions)
         population = createNewPopulation(50,conds)
         generation = 0
-
+        bestGenome = findBestGenome(population)
         while generation < max_gen:
             print("Generation: ",generation)
             print("Reproduction cycle.")
             for i in range(int(floor(len(population)/2))):
                 population.append(reproduction(population,conds))
             print("Removing unfit specimen.")
-            for genom in population:
-                if genom != None:
-                    if genom.fitness > THRESHOLD or genom.fitness < 0:
-                        
-                        population.remove(genom)
+            population.sort(key=lambda p:p.fitness)
+            for i in range(floor(len(population)/2)):
+                population.remove(population[i])
             print("Finished removing unfit specimen.")
             print("Removing None values.")
             population = removeNones(population)
