@@ -144,7 +144,7 @@ def incomePreparsing(income, knownExpenses):
 
 
 def budgetCreationGA(income,knownExpenses,conditions):
-    max_gen = 20
+    max_gen = 300
     remainingAmount = incomePreparsing(income,knownExpenses)
     USABLE_AMOUNT = remainingAmount
     bestGenome = Genome([],0)
