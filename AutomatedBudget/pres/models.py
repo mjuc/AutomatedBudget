@@ -1,9 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from sqlalchemy import ForeignKey
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
 
 class Expense(models.Model):
     sum = models.FloatField()
-    category = models.CharField(max_length=50)
+    category = models.ManyToManyField(Category)
+    spent_sum = models.FloatField()
 
 class Condition(models.Model):
     name = models.CharField(max_length=30)
@@ -21,3 +26,7 @@ class Budget(models.Model):
     conditions = models.ManyToManyField(Condition)
     income = models.FloatField()
     annotation = models.CharField(max_length=4,choices=ANNOTATIONS)
+
+class Savings(models.Model):
+    saved_sum = models.FloatField()
+    owner = ForeignKey(User)
