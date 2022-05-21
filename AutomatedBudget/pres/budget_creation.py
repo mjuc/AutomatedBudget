@@ -1,4 +1,4 @@
-from random import random,uniform,randrange
+from random import randint, random,uniform,randrange
 from numpy import floor
 
 
@@ -20,16 +20,15 @@ def removeNones(arr):
 
 def evaluate(chromosomes,conditions):
     spentAmount = 0
-    condMatch = 0
+    condMatch = 1
     for i in range(len(chromosomes)):
         if conditions[i]["isPercentage"]:
             spentAmount += conditions[i]["value"] * userIncome * chromosomes[i]
-            condMatch += (conditions[i]["value"] * userIncome) - (conditions[i]["value"] * userIncome * chromosomes[i] / 100)
+            condMatch *= chromosomes[i] * conditions[i]["value"]
         else:
             spentAmount += conditions[i]["value"] * chromosomes[i]
-            condMatch += conditions[i]["value"] - (conditions[i]["value"] * chromosomes[i])
-    ret = ((usableAmount - spentAmount) + condMatch)
-    return ret
+            condMatch *= (conditions[i]["value"] * chromosomes[i]) / conditions[i]["value"]
+    return ((usableAmount - spentAmount) * condMatch)
 
 def createNewPopulation(size,conditions):
     population = []
@@ -39,7 +38,8 @@ def createNewPopulation(size,conditions):
             if condition["isExtendable"]:
                 chromosomes.append(uniform(0,5))
             else:
-                chromosomes.append(random())
+                chromosomes.append(uniform(0.0,1.0))
+
         fitness = evaluate(chromosomes,conditions)
         newGenome = Genome(chromosomes,fitness)
         population.append(newGenome)
@@ -61,7 +61,7 @@ def mutation(chromo,conditions):
         if conditions[idx]["isExtendable"]:
             chromo[idx] = uniform(0,5)
         else:
-            chromo[idx] = random()
+            chromo[idx] = uniform(0.0,1.0)
         
     return chromo
 
@@ -185,7 +185,7 @@ def budgetCreationGA(income,knownExpenses,conditions):
             else:
                 tmp["sum"] = conds[i]["value"] * bestGenome.chromosomes[i]
             calculatedExpenses.append(tmp)
-        if bestGenome.fitness != 0:
+        if (usableAmount - sum(expense["sum"] for expense in calculatedExpenses)) != 0:
             tmp = {}
             tmp["sum"] = usableAmount - sum(expense["sum"] for expense in calculatedExpenses)
             tmp["category"] = "unassigned"
