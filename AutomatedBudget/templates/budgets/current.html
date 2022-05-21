@@ -1,4 +1,10 @@
 {% extends 'budgets/base.html' %} {% block content %}
+<div id="creation_date" hidden="true">
+    {{ budget.creation_date }}
+</div>
+<div id="type" hidden="true">
+    {{ budget.type }}
+</div>
 <section>
     <div class="container-fluid">
         <div class="col-4">
