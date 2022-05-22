@@ -1,12 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-
 class Expense(models.Model):
     sum = models.FloatField()
-    category = models.ManyToManyField(Category)
+    category = models.CharField(max_length=50)
     spent_sum = models.FloatField()
 
 class Condition(models.Model):
