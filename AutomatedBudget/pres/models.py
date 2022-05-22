@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from sqlalchemy import ForeignKey
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
@@ -29,4 +28,4 @@ class Budget(models.Model):
 
 class Savings(models.Model):
     saved_sum = models.FloatField()
-    owner = ForeignKey(User)
+    owner = models.ForeignKey(User,on_delete=models.CASCADE)
