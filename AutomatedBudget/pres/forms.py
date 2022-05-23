@@ -9,7 +9,7 @@ class ConditionCreationForm(forms.ModelForm):
 class ExpenseCreationForm(forms.ModelForm):
     class Meta:
         model = Expense
-        fields = '__all__'
+        fields = ['category','sum']
 
 class BudgetCreationForm(forms.ModelForm):
     class Meta:
