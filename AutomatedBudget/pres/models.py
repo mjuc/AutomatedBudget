@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Expense(models.Model):
     sum = models.FloatField()
     category = models.CharField(max_length=50)
-    spent_sum = models.FloatField()
+    spent_sum = models.FloatField(default=0)
 
 class Condition(models.Model):
     name = models.CharField(max_length=30)
@@ -24,5 +24,5 @@ class Budget(models.Model):
     annotation = models.CharField(max_length=4,choices=ANNOTATIONS)
 
 class Savings(models.Model):
-    saved_sum = models.FloatField()
+    saved_sum = models.FloatField(default=0)
     owner = models.ForeignKey(User,on_delete=models.CASCADE)
