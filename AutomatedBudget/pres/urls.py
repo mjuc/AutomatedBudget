@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -6,5 +6,4 @@ urlpatterns = [
     path('history/', views.history, name="history"),
     path('current/', views.current, name="current"),
     path('create/', views.create, name="create"),
-    path('error/', views.error)
-]
+    path('error/', views.error)]
