@@ -1,13 +1,16 @@
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
 from rest_framework.views import APIView
+from django.contrib.auth.models import User
 from pres import models
 
-@login_required
 class ExpenseUpdateView(APIView):
     def post(self, request):
-        savings = models.Savings.objects.filter(owner=request.user)
-        expense = models.Expense.objects.filter(id=request.data.exp_id)
-        expense.spent_sum += request.data.expSpentSum
-        savings.saved_sum -= request.data.expSpentSum
+        user = User.objects.get(id=request.data["user_id"])
+        savings = models.Savings.objects.get(owner=user)
+        expense = models.Expense.objects.get(id=request.data["exp_id"])
+        print(expense)
+        expense.spent_sum += float(request.data["expSpentSum"])
+        savings.saved_sum -= float(request.data["expSpentSum"])
         expense.save()
         savings.save()
+        return JsonResponse({"Effect": True})

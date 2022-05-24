@@ -5,12 +5,14 @@
 <div id="type" hidden="true">
     {{ budget.type }}
 </div>
+<div id="expenseUpdateURL" hidden="true">{% url 'updateExpense' %}</div>
 <div id="base_line_annotation" hidden="true">
     {{ budget.annotation }}
 </div>
 <section>
+    {% csrf_token %}
     <div class="container-fluid">
-        <div class="col-4">
+        <div id="budget-container" class="col-4">
             <div class="row budget-header">
                 {{ budget.type }}
             </div>
@@ -22,12 +24,11 @@
                 <div>
                     {{ expense.category }}: {{ expense.sum }} 
                 </div>
-                <div>
-                    <div class="exp-id" hidden="true">
-                        {{ expense.id }}
-                    </div>
-                    <input class="spent-input" type="number" placeholder="{{ expense.spent_sum }}">
-                    <button class="btn btn-success update-expense-button">Add</button>
+                <div id="{{ forloop.counter }}">
+                    <div id="exp-id-{{ forloop.counter }}" hidden="true">{{ expense.id }}</div>
+                    <div id="usr-id-{{ forloop.counter }}" hidden="true">{{ request.user.id }}</div>
+                    <input id="spent-input-{{ forloop.counter }}" type="number" placeholder="{{ expense.spent_sum }}">
+                    <button class="btn btn-success update-expense">Add</button>
                 </div>
              </div>
             {% endfor %}
@@ -38,5 +39,5 @@
 <script src="{% static 'presentation.js' %}" type="text/javascript"></script>
 <script src="{% static 'notifications.js' %}" type="text/javascript"></script>
 <script src="{% static 'expensetracking.js' %}" type="text/javascript"></script>
-<script src="{% static 'creditsuggestion.js' %}" type="text/javascript"></script>
+<script src="{% static 'creditsuggestions.js' %}" type="text/javascript"></script>
 {% endblock %}
