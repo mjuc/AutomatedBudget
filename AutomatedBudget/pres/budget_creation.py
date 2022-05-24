@@ -147,7 +147,7 @@ def incomePreparsing(income, knownExpenses):
     return remainingAmount
 
 
-def budgetCreationGA(income,knownExpenses,conditions):
+def budgetCreationGA(income,knownExpenses,conditions, savings):
     max_gen = 1000
     remainingAmount = incomePreparsing(income,knownExpenses)
     global usableAmount 
