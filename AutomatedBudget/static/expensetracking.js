@@ -40,7 +40,6 @@ budgetContainer.addEventListener("click",function(event){
         expID = getExpenseID(parent);
         usrID = getUserID(parent);
         const data = { "exp_id": expID,"expSpentSum": spentSum,"user_id": usrID};
-        console.log(data);
         fetch(url,{method: "POST",
             headers:{"Content-Type": "application/json","X-CSRFToken":  csrftoken},
             mode: 'same-origin',

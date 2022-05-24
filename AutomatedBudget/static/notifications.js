@@ -55,7 +55,7 @@ function showExpiringNotification(){
     const creationDate = parseDate(creationDateText);
     const type = document.getElementById("type").innerText;
     let currentDate = new Date();
-    var timeDiff = Math.abs(dateSecond.getTime() - dateFirst.getTime());
+    var timeDiff = Math.abs(currentDate.getTime() - creationDate.getTime());
     var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     let message = "";
     let days = 0;

@@ -1,5 +1,5 @@
 function extractText(html){
-    return html.textContent || html.innerText
+    return html.textContent || html.innerText;
 }
  
 function parseDocument(){
