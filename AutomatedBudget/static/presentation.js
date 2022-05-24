@@ -4,11 +4,9 @@ function extractText(html){
  
 function parseDocument(){
     var budgetHeaders = document.getElementsByClassName("budget-header");
-    let length = budgetHeaders.length
-    console.log(budgetHeaders)
+    let length = budgetHeaders.length;
     for(let i=0;i<length;i++){
         let html = extractText(budgetHeaders[i]);
-        console.log(html);
         if (html.includes("MONTH")){
             budgetHeaders[i].innerHTML = "Monthly budget";
         }
