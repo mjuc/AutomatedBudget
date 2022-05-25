@@ -1,4 +1,4 @@
-from random import randint, random,uniform,randrange
+from random import uniform,randrange
 from numpy import floor
 
 
