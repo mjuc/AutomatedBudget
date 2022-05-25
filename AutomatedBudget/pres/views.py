@@ -18,7 +18,8 @@ def history(request):
 @ensure_csrf_cookie
 def current(request):
     budget = Budget.objects.last()
-    return render(request,'budgets/current.html',context={"budget": budget})
+    savings = Savings.objects.get(owner = request.user)
+    return render(request,'budgets/current.html',context={"budget": budget,"savings": savings})
 
 @login_required
 def error(request):
