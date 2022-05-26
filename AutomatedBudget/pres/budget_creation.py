@@ -151,44 +151,61 @@ def budgetCreationGA(income,knownExpenses,conditions, savings):
     max_gen = 1000
     remainingAmount = incomePreparsing(income,knownExpenses)
     global usableAmount 
-    usableAmount = remainingAmount
+    usableAmount = remainingAmount + savings
     global userIncome
     userIncome = income
     bestGenome = Genome([],9999)
-    if remainingAmount < 0:
-        return (False,{"annotation": "LOSS"})
-    elif remainingAmount == 0:
-        return (False,{"annotation": "EVEN"})
-    else:
-        conds = conditionsPreparsing(conditions)
-        population = createNewPopulation(50,conds)
-        generation = 0
+    conds = conditionsPreparsing(conditions)
+    population = createNewPopulation(50,conds)
+    generation = 0
+    bestGenome = findBestGenome(population)
+    while generation < max_gen:
+        popLength = int(floor(len(population)/2))
+        for i in range(popLength):
+            population.append(reproduction(population,conds))
+        population.sort(key=lambda p:p.fitness)
+        for i in range(popLength):
+            population.remove(population[i])
+        population = removeNones(population)
         bestGenome = findBestGenome(population)
-        while generation < max_gen:
-            popLength = int(floor(len(population)/2))
-            for i in range(popLength):
-                population.append(reproduction(population,conds))
-            population.sort(key=lambda p:p.fitness)
-            for i in range(popLength):
-                population.remove(population[i])
-            population = removeNones(population)
-            bestGenome = findBestGenome(population)
-            generation += 1
-        ret = {}
+        generation += 1
+    ret = {}
+    if remainingAmount < 0:
+        ret["annotation"] = "LOSS"
+    elif remainingAmount == 0:
+        ret["annotation"] = "EVEN"
+    else:
         ret["annotation"] = ""
-        calculatedExpenses = []
-        for i in range(len(bestGenome.chromosomes)):
-            tmp = {}
-            tmp["category"] = conds[i]["name"]
-            if conds[i]["isPercentage"]:
+    calculatedExpenses = []
+    
+    unassignedAmount = 0
+    expSum = 0
+    for i in range(len(bestGenome.chromosomes)):
+        if conds[i]["isPercentage"]:
+            expSum += conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]
+        else:
+            expSum += conds[i]["value"] * bestGenome.chromosomes[i]
+    unassignedAmount = usableAmount - expSum
+    for i in range(len(bestGenome.chromosomes)):
+        tmp = {}
+        tmp["category"] = conds[i]["name"]
+        if conds[i]["isPercentage"]:
+            if unassignedAmount > 0 and unassignedAmount >= (conds[i]["value"] * usableAmount) - (conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]):
+                tmp["sum"] = conds[i]["value"] * usableAmount
+                unassignedAmount -= (conds[i]["value"] * usableAmount) - (conds[i]["value"] * usableAmount * bestGenome.chromosomes[i])
+            else:
                 tmp["sum"] = conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]
+        else:
+            if unassignedAmount > 0 and unassignedAmount >= conds[i]["value"] - (conds[i]["value"] * bestGenome.chromosomes[i]):
+                tmp["sum"] = conds[i]["value"]
+                unassignedAmount -= conds[i]["value"] - (conds[i]["value"] * bestGenome.chromosomes[i])
             else:
                 tmp["sum"] = conds[i]["value"] * bestGenome.chromosomes[i]
-            calculatedExpenses.append(tmp)
-        if (usableAmount - sum(expense["sum"] for expense in calculatedExpenses)) != 0:
-            tmp = {}
-            tmp["sum"] = usableAmount - sum(expense["sum"] for expense in calculatedExpenses)
-            tmp["category"] = "unassigned"
-            calculatedExpenses.append(tmp)
-        ret["calculatedExpenses"] = calculatedExpenses
-        return (True,ret)
+        calculatedExpenses.append(tmp)
+    if (usableAmount - sum(expense["sum"] for expense in calculatedExpenses)) != 0:
+        tmp = {}
+        tmp["sum"] = usableAmount - sum(expense["sum"] for expense in calculatedExpenses)
+        tmp["category"] = "unassigned"
+        calculatedExpenses.append(tmp)
+    ret["calculatedExpenses"] = calculatedExpenses
+    return (True,ret)
