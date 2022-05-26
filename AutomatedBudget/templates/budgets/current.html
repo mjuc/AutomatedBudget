@@ -5,6 +5,7 @@
 <div id="type" hidden="true">
     {{ budget.type }}
 </div>
+<div id="income" hidden="true">{{ budget.income }}</div>
 <div id="expenseUpdateURL" hidden="true">{% url 'updateExpense' %}</div>
 <div id="base_line_annotation" hidden="true">
     {{ budget.annotation }}
@@ -19,9 +20,10 @@
             <div class="row">
                 Created by: {{ budget.owner }} at {{ budget.creation_date }}
             </div>
+            <div id="current-savings">{{ savings.saved_sum }}</div>
             {% for expense in budget.expenses.all %}
             <div class="row">
-                <div>
+                <div class="exp">
                     {{ expense.category }}: {{ expense.sum }} 
                 </div>
                 <div id="{{ forloop.counter }}">
