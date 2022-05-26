@@ -45,6 +45,8 @@ budgetContainer.addEventListener("click",function(event){
             mode: 'same-origin',
             body: JSON.stringify(data)}).then(data => data.json()).then((json) => {
                 console.log(JSON.stringify(json));
+                event.target.value="";
+                window.location.reload(true);
             });
     }  
 });
