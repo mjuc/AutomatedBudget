@@ -56,7 +56,7 @@ function showExpiringNotification(){
     const type = document.getElementById("type").innerText;
     let currentDate = new Date();
     var timeDiff = Math.abs(currentDate.getTime() - creationDate.getTime());
-    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    var daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
     let message = "";
     let days = 0;
     if (type == "MONTH"){
@@ -106,8 +106,10 @@ function showExpiringNotification(){
     else{
         message += "Budget expires in " + days + " days.";
     }
-    if (message.includes("Budget")){
-        alert(message);
+    if (daysDiff != 0){
+        if (message.includes("Budget")){
+            alert(message);
+        }
     }
 }
 
