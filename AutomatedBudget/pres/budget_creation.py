@@ -191,14 +191,20 @@ def budgetCreationGA(income,knownExpenses,conditions, savings):
         tmp["category"] = conds[i]["name"]
         if conds[i]["isPercentage"]:
             if unassignedAmount > 0 and unassignedAmount >= (conds[i]["value"] * usableAmount) - (conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]):
-                tmp["sum"] = conds[i]["value"] * usableAmount
-                unassignedAmount -= (conds[i]["value"] * usableAmount) - (conds[i]["value"] * usableAmount * bestGenome.chromosomes[i])
+                if not conds[i]["isExtendable"]:
+                    tmp["sum"] = conds[i]["value"] * usableAmount
+                    unassignedAmount -= (conds[i]["value"] * usableAmount) - (conds[i]["value"] * usableAmount * bestGenome.chromosomes[i])
+                else:
+                    tmp["sum"] = conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]
             else:
                 tmp["sum"] = conds[i]["value"] * usableAmount * bestGenome.chromosomes[i]
         else:
             if unassignedAmount > 0 and unassignedAmount >= conds[i]["value"] - (conds[i]["value"] * bestGenome.chromosomes[i]):
-                tmp["sum"] = conds[i]["value"]
-                unassignedAmount -= conds[i]["value"] - (conds[i]["value"] * bestGenome.chromosomes[i])
+                if not conds[i]["isExtendable"]:
+                    tmp["sum"] = conds[i]["value"]
+                    unassignedAmount -= conds[i]["value"] - (conds[i]["value"] * bestGenome.chromosomes[i])
+                else:
+                    tmp["sum"] = conds[i]["value"] * bestGenome.chromosomes[i]
             else:
                 tmp["sum"] = conds[i]["value"] * bestGenome.chromosomes[i]
         calculatedExpenses.append(tmp)

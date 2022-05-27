@@ -48,7 +48,6 @@ def create(request):
                     expense.save()
                     budget.expenses.add(expense)
             
-            savings.saved_sum += savedSum
             savings.save()
 
             for condForm in conditionFormset:
@@ -69,6 +68,8 @@ def create(request):
                     expense.spent_sum = 0
                     expense.save()
                     budget.expenses.add(expense)
+            savings.saved_sum += savedSum
+            savings.save()
                     
             return redirect(current)
         else:
