@@ -215,3 +215,4 @@ def budgetCreationGA(income,knownExpenses,conditions, savings):
         calculatedExpenses.append(tmp)
     ret["calculatedExpenses"] = calculatedExpenses
     return (True,ret)
+    
