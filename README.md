@@ -3,7 +3,7 @@
 Web-based solution to automate creating budgets according to user-specified conditions.
 
 
-##Setup
+## Setup
 
 To set up local development environment you need Docker installed.
 * Go to AutomatedBudegt folder `cd AutomatedBudget`
