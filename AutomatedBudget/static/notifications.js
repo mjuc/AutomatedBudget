@@ -42,9 +42,9 @@ function getMonthNumber(month){
 
 function parseDate(date){
     arr = date.split(" ");
-    let day = arr[0];
+    let day = arr[1].split(",")[0];
     let year = arr[2];
-    let month = getMonthNumber(arr[1]);
+    let month = getMonthNumber(arr[0]);
     var d = new Date();
     d.setFullYear(year,month,day);
     return d
@@ -106,7 +106,7 @@ function showExpiringNotification(){
     else{
         message += "Budget expires in " + days + " days.";
     }
-    if (days != 0){
+    if (message.includes("Budget")){
         alert(message);
     }
 }
