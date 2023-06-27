@@ -109,16 +109,15 @@ def reproduction(population,conditions):
         return copyChromosomes(parent1,parent2,conditions)
 
 def parseValue(value,isPercentage):
-    ret = 0
     if " " in value:
         value = value.split(" ")[0]
     if "." in value:
-        ret = float(value)
+        return float(value)
     else:
-        ret = int(value)
-    if isPercentage:
-        ret /= 100
-    return ret
+        if isPercentage:
+            return value/100
+        else:
+            return int(value)
 
 def conditionsPreparsing(conditions):
     parsedConditions = []
