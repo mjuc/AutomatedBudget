@@ -120,21 +120,15 @@ def parseValue(value,isPercentage):
             return int(value)
 
 def conditionsPreparsing(conditions):
-    parsedConditions = []
-    for condition in conditions:
-        val = 0
-        tempCond = {}
-        tempCond["name"] = condition["name"]
-        tempCond["isExtendable"] = condition["isExtendable"]
-        if "%" in condition["value"]:
-            tmp = condition["value"].split("%")[0]
-            tempCond["isPercentage"] = True
-            val = parseValue(tmp,tempCond["isPercentage"])
-        else:
-            tempCond["isPercentage"] = False
-            val = parseValue(condition["value"],tempCond["isPercentage"])
-        tempCond["value"] = val
-        parsedConditions.append(tempCond)
+    parsedConditions = [{"name": condition["name"],
+        "isExtendable": condition["isExtendable"],
+        "isPercentage": True,
+        "value": parseValue(condition["value"].split("%")[0], True)} 
+        if "%" in condition["value"] else
+        {"name": condition["name"],
+        "isExtendable": condition["isExtendable"],
+        "isPercentage": False,
+        "value": parseValue(condition["value"], False)} for condition in conditions]
     return parsedConditions
 
 def incomePreparsing(income, knownExpenses):
