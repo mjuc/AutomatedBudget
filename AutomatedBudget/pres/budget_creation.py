@@ -69,6 +69,7 @@ def copyChromosomes(parent1,parent2,conditions):
     size = len(parent1)
     child = [-1] * size
     
+
     for i in range(size):
         if randrange(0,1)==0:
             child[i]=parent1[i]
@@ -81,17 +82,16 @@ def copyChromosomes(parent1,parent2,conditions):
     newGenome = Genome(child,evaluate(child,conditions))
     return newGenome
 
-def orderOneCrossover(parent1, parent2):
+def orderOneCrossover(parent1, parent2,conditions):
     size = len(parent1)
-    child = [-1] * size
 
     point = randrange(1, size)
-
-    for i in range(point):
-        child[i] = parent1[i]
-
-    for i in range(point, size):
-        child[i] = parent2[i]
+    child_pr1 = removeNones([gene if index <= point else None for gene,index in enumerate(parent1)])
+    child_pr2 = removeNones([gene if index > point else None for gene,index in enumerate(parent2)])
+    child = child_pr1 + child_pr2
+    
+    newGenome = Genome(child, evaluate(child, conditions)) 
+    return newGenome
 
 
 def reproduction(population,conditions):
@@ -104,7 +104,7 @@ def reproduction(population,conditions):
         cnt += 1
     
     if randrange(0, 100)<CROSSOVER_RATE and len(parent1) > 2:
-        return orderOneCrossover(parent1, parent2)
+        return orderOneCrossover(parent1, parent2,conditions)
     else:
         return copyChromosomes(parent1,parent2,conditions)
 
